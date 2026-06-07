@@ -69,4 +69,4 @@ $('viaf').onchange=e=>{let f=e.target.files[0];if(f){via.src=URL.createObjectURL
 $('koaf').onchange=e=>{let f=e.target.files[0];if(f){koa.src=URL.createObjectURL(f);unlocked=false;setMsg('Đã chọn KO audio. Nếu dùng iPhone, bấm Unlock.')}};
 function tryAuto(){let vu=candidateUrls('vi')[0], ku=candidateUrls('ko')[0]; if(vu)via.src=vu; if(ku)koa.src=ku; try{via.load();koa.load();}catch(e){} setMsg('Đã khai báo audio từ GitHub. Nếu iPhone chưa nghe, chờ vài giây rồi bấm Unlock/Smart Flow.')}tryAuto();
 (function addIphoneButtons(){let row=document.querySelector('.float .row');if(row){let b=document.createElement('button');b.textContent='Unlock iPhone Audio';b.className='warn';b.onclick=()=>unlockAudio(true);row.insertBefore(b,row.children[3]||null);let d=document.createElement('button');d.textContent='Audio paths';d.onclick=()=>showAudioPaths();row.appendChild(d);}})();
-render();<\/script></body></html>
+render();</script></body></html>
