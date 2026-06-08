@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Agency S01E02</title>
-<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=M0w77uezPxcFtrJ1GU8PCr3AgGUuF3tSvpFleum3bwfClr3AaUiu-Nuodza3xZfNLBrHuL2IT_ecDCyXwvoyeQMUGPx39Xsm2bg5cdVcGwbJZch6ZufPrjuOiKrY8G2XfJqW9fHSmvnktcaMHhzRpRb88z4xlPeV9-xnzUwlSHVRt4z9bmfsiPs65s87_F6mmuiIGGL6jjVMWQbB1XBrtcdFz6okEuoZNUsWC2b8_b0uZm-FyvjHfACwJ6IJ6iUn8sgRPC0fkH-XphcpHkPw3NNQ_A_586fR9lemGCZN2e79yuzdh-d5ojQAGewSVs-AhbE2YJEy2C2azvp3gRolaQ" charset="UTF-8"></script><style>
+<style>
 :root{--bg:#f5f7fb;--card:#fff;--line:#e5e7eb;--ink:#111827;--muted:#64748b;--green:#16a34a;--blue:#2563eb;--violet:#7c3aed;--amber:#f59e0b;--red:#dc2626;--slate:#334155}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink)}
@@ -43,6 +43,7 @@ audio{width:100%}
   <h3>Agency S01E02</h3>
   <div class="row" style="margin-top:8px">
     <select id="mode">
+      <option value="vi-readvi-readko-ko">VI Dub → Read VI → Read KO → KO Live</option>
       <option value="vi-readko-ko">VI Dub → Read KO → KO Live</option>
       <option value="vi-ko">VI Dub → KO Live</option>
       <option value="vi">VI Dub only</option>
@@ -111,7 +112,7 @@ function render(){
     h+='<div class="meta"><span>'+esc2(title)+'</span><span>'+(i===idx?'SELECTED':'')+'</span></div>';
     h+=badgeHtml(b);
     h+='<div class="txt">'+(b.vi?'<div>'+esc2(b.vi)+'</div>':'')+(b.ko?'<div class="ko">'+esc2(b.ko)+'</div>':'')+(b.en?'<div class="en">'+esc2(b.en)+'</div>':'')+'</div>';
-    h+='<div class="row" style="margin-top:8px"><button onclick="event.stopPropagation();idx='+i+';readKoCurrent()">Read KO</button><button class="good" onclick="event.stopPropagation();idx='+i+';playCurrent(\'vi\')">VI Dub</button><button class="violet" onclick="event.stopPropagation();idx='+i+';playCurrent(\'ko\')">KO Live</button><button class="warn" onclick="event.stopPropagation();idx='+i+';playCueMode()">VI→KO→KO</button></div>';
+    h+='<div class="row" style="margin-top:8px"><button onclick="event.stopPropagation();idx='+i+';readKoCurrent()">Read KO</button><button class="good" onclick="event.stopPropagation();idx='+i+';playCurrent(\'vi\')">VI Dub</button><button class="violet" onclick="event.stopPropagation();idx='+i+';playCurrent(\'ko\')">KO Live</button><button class="warn" onclick="event.stopPropagation();idx='+i+';playCueMode()">VI→VI→KO→KO</button></div>';
     h+='</div>';
   });
   $('list').innerHTML=h||'<div class="item">Không có cue phù hợp.</div>';
@@ -153,32 +154,33 @@ async function playAudioKind(k,myToken){
 }
 async function playCurrent(k){const my=++token;stop=false;const ok=await playAudioKind(k,my);if(!ok)await readKoCurrent()}
 
-function getKoVoice(){
+function getBestVoice(lang){
   try{
     const voices=speechSynthesis.getVoices()||[];
+    const prefix=String(lang||'').slice(0,2).toLowerCase();
     const scored=voices.map(v=>{
       const hay=((v.lang||'')+' '+(v.name||'')).toLowerCase();
       let score=0;
-      if((v.lang||'').toLowerCase().startsWith('ko'))score+=100;
-      if(/korean|한국|ko-kr/.test(hay))score+=60;
-      if(/yuna|siri|google|microsoft|samsung|premium|enhanced/.test(hay))score+=20;
+      if((v.lang||'').toLowerCase().startsWith(prefix))score+=100;
+      if(lang==='ko-KR' && /ko|korean|한국|yuna|siri|google|microsoft|samsung|premium|enhanced/.test(hay))score+=60;
+      if(lang==='vi-VN' && /vi|vietnam|tiếng việt|vietnamese|google|microsoft|premium|enhanced/.test(hay))score+=60;
       if(v.localService)score+=5;
       return {v,score};
     }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
     return scored[0]?.v||null;
   }catch(e){return null}
 }
-function readKo(text,myToken){
+function readTts(text,lang,myToken,rate){
   return new Promise(res=>{
     text=String(text||'').trim();
     if(!text){res(false);return}
     try{
       speechSynthesis.cancel();
-      const u=new SpeechSynthesisUtterance(text.slice(0,900));
-      u.lang='ko-KR';
-      u.rate=0.88;
+      const u=new SpeechSynthesisUtterance(text.slice(0,1200));
+      u.lang=lang;
+      u.rate=rate||1;
       u.pitch=1;
-      const v=getKoVoice(); if(v)u.voice=v;
+      const v=getBestVoice(lang); if(v)u.voice=v;
       let done=false;
       function finish(ok){if(done)return;done=true;res(ok)}
       u.onend=()=>finish(true);u.onerror=()=>finish(false);
@@ -187,37 +189,53 @@ function readKo(text,myToken){
     }catch(e){res(false)}
   })
 }
+function readKo(text,myToken){return readTts(text,'ko-KR',myToken,0.88)}
+function readVi(text,myToken){return readTts(text,'vi-VN',myToken,0.95)}
 function readKoCurrent(){const my=++token;stop=false;return readKo(cur().ko||cur().text||'',my)}
+function readViCurrent(){const my=++token;stop=false;return readVi(cur().vi||'',my)}
 if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>{try{speechSynthesis.getVoices()}catch(e){}}}
 
-async function playCueMode(){
-  const my=++token;stop=false;
+async function playByModeForCurrent(mode,my){
   const b=cur();
   const hasVi=hasRange('vi',b), hasKo=hasRange('ko',b);
-  if(hasVi) await playAudioKind('vi',my);
-  if(stop||my!==token)return;
-  await readKo(b.ko||b.text||'',my);
-  if(stop||my!==token)return;
-  if(hasKo) await playAudioKind('ko',my);
+  if(mode==='vi-readvi-readko-ko'){
+    if(hasVi) await playAudioKind('vi',my); else await readVi(b.vi||'',my);
+    if(stop||my!==token)return;
+    await readKo(b.ko||b.text||'',my);
+    if(stop||my!==token)return;
+    if(hasKo) await playAudioKind('ko',my);
+  }else if(mode==='vi-readko-ko'){
+    if(hasVi) await playAudioKind('vi',my);
+    if(stop||my!==token)return;
+    await readKo(b.ko||b.text||'',my);
+    if(stop||my!==token)return;
+    if(hasKo) await playAudioKind('ko',my);
+  }else if(mode==='vi-ko'){
+    if(hasVi)await playAudioKind('vi',my);
+    if(stop||my!==token)return;
+    if(hasKo)await playAudioKind('ko',my);
+    else if(!hasVi)await readKo(b.ko||b.text||'',my);
+  }else if(mode==='vi'){
+    const ok=await playAudioKind('vi',my);
+    if(!ok)await readVi(b.vi||'',my);
+  }else if(mode==='ko'){
+    const ok=await playAudioKind('ko',my);
+    if(!ok)await readKo(b.ko||b.text||'',my);
+  }else if(mode==='readko'){
+    await readKo(b.ko||b.text||'',my);
+  }
+}
+async function playCueMode(){
+  const my=++token;stop=false;
+  await playByModeForCurrent($('mode').value,my);
 }
 async function smart(){
   stop=false;const my=++token;
   const mode=$('mode').value;
-  if(mode==='vi-readko-ko'&&!unlocked&&/iPad|iPhone|iPod/.test(navigator.userAgent)){await unlockAudio()}
+  if((mode==='vi-readko-ko'||mode==='vi-readvi-readko-ko')&&!unlocked&&/iPad|iPhone|iPod/.test(navigator.userAgent)){await unlockAudio()}
   for(;idx<project.blocks.length&&my===token&&!stop;idx++){
-    render();scrollActive();const b=cur();
-    if(mode==='readko'){await readKo(b.ko||b.text||'',my)}
-    else if(mode==='vi'){const ok=await playAudioKind('vi',my);if(!ok)await readKo(b.ko||b.text||'',my)}
-    else if(mode==='ko'){const ok=await playAudioKind('ko',my);if(!ok)await readKo(b.ko||b.text||'',my)}
-    else if(mode==='vi-ko'){
-      const hasVi=hasRange('vi',b), hasKo=hasRange('ko',b);
-      if(hasVi)await playAudioKind('vi',my);
-      if(stop||my!==token)break;
-      if(hasKo)await playAudioKind('ko',my);
-      else if(!hasVi)await readKo(b.ko||b.text||'',my);
-    }else{
-      await playCueMode();
-    }
+    render();scrollActive();
+    await playByModeForCurrent(mode,my);
     if(stop||my!==token)break;
   }
 }
