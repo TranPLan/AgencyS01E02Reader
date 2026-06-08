@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Agency S01E02</title>
-<style>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=M0w77uezPxcFtrJ1GU8PCr3AgGUuF3tSvpFleum3bwfClr3AaUiu-Nuodza3xZfNLBrHuL2IT_ecDCyXwvoyeQMUGPx39Xsm2bg5cdVcGwbJZch6ZufPrjuOiKrY8G2XfJqW9fHSmvnktcaMHhzRpRb88z4xlPeV9-xnzUwlSHVRt4z9bmfsiPs65s87_F6mmuiIGGL6jjVMWQbB1XBrtcdFz6okEuoZNUsWC2b8_b0uZm-FyvjHfACwJ6IJ6iUn8sgRPC0fkH-XphcpHkPw3NNQ_A_586fR9lemGCZN2e79yuzdh-d5ojQAGewSVs-AhbE2YJEy2C2azvp3gRolaQ" charset="UTF-8"></script><style>
 :root{--bg:#f5f7fb;--card:#fff;--line:#e5e7eb;--ink:#111827;--muted:#64748b;--green:#16a34a;--blue:#2563eb;--violet:#7c3aed;--amber:#f59e0b;--red:#dc2626;--slate:#334155}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink)}
@@ -87,8 +87,8 @@ function esc2(s){return String(s||'').replace(/[&<>"']/g,function(m){return {'&'
 function fmt(t){t=Number(t||0);let h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=Math.floor(t%60),ms=Math.round((t-Math.floor(t))*1000);if(ms>=1000){s++;ms-=1000}return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+','+String(ms).padStart(3,'0')}
 function rangeLabel(arr){if(!arr||!arr.length)return '';let a=arr[0],b=arr[arr.length-1];return fmt(a.start)+' → '+fmt(b.end)+(arr.length>1?' x'+arr.length:'')}
 function hasRange(k,b){let arr=k==='vi'?b.viRanges:b.koRanges;return !!(arr&&arr.length)}
-function folderPath(){let f=String(project.audioFolder||'audio').trim().replace(//$/,'');return f||'audio'}
-function pathFor(k){let folder=folderPath();let file=k==='vi'?project.viAudioFile:project.koAudioFile;if(!file)return '';if(/^https?:///i.test(file))return file;if(folder==='.'||folder==='')return './'+file;if(folder.startsWith('../')||folder.startsWith('./'))return folder+'/'+file;return './'+folder+'/'+file}
+function folderPath(){let f=String(project.audioFolder||'audio').trim();while(f.endsWith('/'))f=f.slice(0,-1);return f||'audio'}
+function pathFor(k){let folder=folderPath();let file=k==='vi'?project.viAudioFile:project.koAudioFile;if(!file)return '';if(file.startsWith('http://')||file.startsWith('https://'))return file;if(folder==='.'||folder==='')return './'+file;if(folder.startsWith('../')||folder.startsWith('./'))return folder+'/'+file;return './'+folder+'/'+file}
 function loadPaths(){viUrl=pathFor('vi');koUrl=pathFor('ko');$('audioInfo').textContent='Paths: '+viUrl+' | '+koUrl}
 function showAudioPaths(){alert('VI: '+viUrl+'\nKO: '+koUrl+'\n\nNếu đặt reader trong thư mục subtitle-master, audio folder thường là ../audio.')}
 function loadLocal(k,f){if(!f)return;if(k==='vi')viUrl=URL.createObjectURL(f);else koUrl=URL.createObjectURL(f);$('audioInfo').textContent='Loaded local '+k+': '+f.name}
