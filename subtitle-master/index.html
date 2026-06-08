@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Agency S01E02</title>
-<style>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=iZxq18scU9QInj5sjoSH1BB0yvKWQEo8Ney9Ja48RjdR6ViZaur-j1IrO0LZb4k6VgxWJ_KJy2n1-9UBrpMoc6z8UL_UK-B5OZrRbmKZgJVN7D8WkZ0HAtNqhVrCV9ZuMxxT_QHq_r-SfN8F3Qbqho8vu3y2CxT5JNxzjofANxC3qfAYykHkbpk11NNPOFstT3j36z_WreLXQa9a98L3o1HbZeLKil4VDJ-FgPbotrRYGzhaNcQkSLPEQB2pzYXh_qrVuowxLWVTCQiYq3iLIKuhzjHvM0u_OanVfhq40cdfJwAxY9hxpcgXG4xkMG2P0HHsLFdK4ATEOoIZB6V52J-blihvaKAZziGytDjnXl8" charset="UTF-8"></script><style>
 :root{--bg:#f5f7fb;--card:#fff;--line:#e5e7eb;--ink:#111827;--muted:#64748b;--green:#16a34a;--blue:#2563eb;--violet:#7c3aed;--amber:#f59e0b;--red:#dc2626;--slate:#334155}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink)}
@@ -28,6 +28,7 @@ button.ghost{background:#f1f5f9;color:#334155}
 .badge.ko{background:#ede9fe;color:#6d28d9}
 .badge.no{background:#fee2e2;color:#991b1b}
 .badge.narr{background:#ecfdf5;color:#047857}
+.timingBadge{font-size:11px!important;font-weight:900!important;border-radius:999px!important;padding:3px 7px!important;line-height:1.2!important;display:inline-block!important;background:#dcfce7!important;color:#166534!important;white-space:nowrap!important}
 .txt{white-space:pre-wrap;font-size:17px;line-height:1.55;font-weight:620}
 .ko{font-family:Malgun Gothic,"Apple SD Gothic Neo",Arial,sans-serif;font-size:21px;line-height:1.65;font-weight:400;color:#111827}
 .en{color:#374151}
@@ -96,8 +97,8 @@ function loadLocal(k,f){if(!f)return;if(k==='vi')viUrl=URL.createObjectURL(f);el
 function toggleAudio(){const p=$('audioPanel');p.style.display=p.style.display==='block'?'none':'block'}
 
 function badgeHtml(b){
-  const vi=hasRange('vi',b)?'<span class="badge vi">VI '+rangeLabel(b.viRanges)+'</span>':'<span class="badge no">No VI</span>';
-  const ko=hasRange('ko',b)?'<span class="badge ko">KO '+rangeLabel(b.koRanges)+'</span>':'<span class="badge no">No KO</span>';
+  const vi=hasRange('vi',b)?'<span class="badge vi timingBadge">VI '+rangeLabel(b.viRanges)+'</span>':'<span class="badge no">No VI</span>';
+  const ko=hasRange('ko',b)?'<span class="badge vi timingBadge">KO '+rangeLabel(b.koRanges)+'</span>':'<span class="badge no">No KO</span>';
   const type=b.kind==='narration'?'<span class="badge narr">Narration</span>':'<span class="badge">Cue</span>';
   return '<div class="badges">'+type+vi+ko+'</div>';
 }
